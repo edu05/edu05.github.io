@@ -1,0 +1,634 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Eduardo or not?</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+  </head>
+  <body>
+    <h1 id="starting-with-spring">Starting with Spring</h1>
+
+<p>This resource is intended for people with no previous experience with Spring, and possibly little programming experience too. If you’ve been exposed to Spring before or have worked with other app development frameworks you’re probably better off looking at other awesome resources, or even at Spring’s own documentation.
+If you’ve just finished learning how to program in Java, you’re starting your software development career, or have just been dumped into a huge project sprinkled with lots of Spring magic that makes no sense, this is meant for you.</p>
+
+<p>You will become the next Spring Guru in your team!</p>
+<h2 id="what-youll-need">What you’ll need</h2>
+
+<ul>
+  <li>Maven 3</li>
+  <li>Java +8</li>
+  <li>Git</li>
+  <li>I recommend an IDE like IntelliJ (there’s a free version) or alternatively a command line prompt</li>
+</ul>
+
+<h2 id="why-spring">Why Spring?</h2>
+
+<p>The best way I can think of advocating for Spring is not by demonstrating what it does but rather explaining what problems it solves.
+Understanding why it’d be incredibly hard not to use it in a real world complex Java application is key. If right now you absolutely hate Spring for how complicated it is and how much harder your project is to understand because of it, the goal is to make you realise how it actually simplifies it and to feel grateful for it. Let’s get to it.</p>
+
+<h2 id="dependency-injection">Dependency Injection</h2>
+
+<p>Imagine you want to build your own Amazon like company. For this you’ll probably need a website that can accept customer orders. Since the website could be one of many customer entry points
+(think about a mobile app) the actual handling can be delegated to a separate, central order processing unit. Such a unit needs to check the inventory for stock, charge the customer for the
+price of the item and dispatch the item. In coding terms it might look like this.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerOrder.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerOrder.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerOrder.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerOrder.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerOrder</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">itemId</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">customerId</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomerOrder</span><span class="o">(</span><span class="kt">int</span> <span class="n">itemId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">customerId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">itemId</span> <span class="o">=</span> <span class="n">itemId</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">customerId</span> <span class="o">=</span> <span class="n">customerId</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getItemId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">itemId</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCustomerId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">customerId</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/AmazonWebsite.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/AmazonWebsite.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/AmazonWebsite.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/AmazonWebsite.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AmazonWebsite</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">AmazonWebsite</span><span class="o">(</span><span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">orderProcessor</span> <span class="o">=</span> <span class="n">orderProcessor</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">acceptOrder</span><span class="o">(</span><span class="nc">CustomerOrder</span> <span class="n">customerOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">orderProcessor</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">customerOrder</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/OrderProcessor.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/OrderProcessor.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/OrderProcessor.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/OrderProcessor.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderProcessor</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">OrderProcessor</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span><span class="o">,</span> <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">warehouses</span> <span class="o">=</span> <span class="n">warehouses</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">customerWallet</span> <span class="o">=</span> <span class="n">customerWallet</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="nc">CustomerOrder</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">warehouse</span> <span class="o">-&gt;</span> <span class="n">warehouse</span><span class="o">.</span><span class="na">isInStock</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getItemId</span><span class="o">()))</span>
+                <span class="o">.</span><span class="na">findFirst</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="n">warehouse</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">customerWallet</span><span class="o">.</span><span class="na">chargeCustomer</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getCustomerId</span><span class="o">(),</span> <span class="n">order</span><span class="o">.</span><span class="na">getItemId</span><span class="o">());</span>
+                    <span class="n">warehouse</span><span class="o">.</span><span class="na">dispatchOrder</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getCustomerId</span><span class="o">(),</span> <span class="n">order</span><span class="o">.</span><span class="na">getItemId</span><span class="o">());</span>
+                <span class="o">});</span>
+
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerWallet.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerWallet.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerWallet.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/CustomerWallet.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerWallet</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">chargeCustomer</span><span class="o">(</span><span class="kt">int</span> <span class="n">customerId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">itemId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//would grab the card details of the customer with id customerId and charge for the price of the item</span>
+        <span class="c1">//with id itemId</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Charging customerId="</span> <span class="o">+</span> <span class="n">customerId</span> <span class="o">+</span> <span class="s">" for the price of itemId="</span> <span class="o">+</span> <span class="n">itemId</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Warehouse.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/Warehouse.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Warehouse.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Warehouse.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Warehouse</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInStock</span><span class="o">(</span><span class="kt">int</span> <span class="n">itemId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//would check the inventory for stock</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Checking if itemId="</span> <span class="o">+</span> <span class="n">itemId</span> <span class="o">+</span> <span class="s">" exists in the inventory"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dispatchOrder</span><span class="o">(</span><span class="kt">int</span> <span class="n">customerId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">itemId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//would take care of sending item with id itemId to customer with id customerId and update its stock</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Dispatching itemId="</span> <span class="o">+</span> <span class="n">itemId</span> <span class="o">+</span> <span class="s">" to customerId="</span> <span class="o">+</span> <span class="n">customerId</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Application.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/vanilla/Application.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Application.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/vanilla/Application.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Warehouse</span> <span class="n">warehouse1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+        <span class="nc">Warehouse</span> <span class="n">warehouse2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse1</span><span class="o">);</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse2</span><span class="o">);</span>
+
+        <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerWallet</span><span class="o">();</span>
+        <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderProcessor</span><span class="o">(</span><span class="n">warehouses</span><span class="o">,</span> <span class="n">customerWallet</span><span class="o">);</span>
+        <span class="nc">AmazonWebsite</span> <span class="n">amazonWebsite</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AmazonWebsite</span><span class="o">(</span><span class="n">orderProcessor</span><span class="o">);</span>
+
+        <span class="n">amazonWebsite</span><span class="o">.</span><span class="na">acceptOrder</span><span class="o">(</span><span class="k">new</span> <span class="nc">CustomerOrder</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">1</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Note I have not fully implemented all of the methods, instead I have focused more on the structure of the code. 
+All of the code is accessible via the <a href="https://github.com/edu05/learnspring">git repo</a> so you don’t have to waste your time copy pasting if you want to try this out for yourself. Here’s where Maven, Java 8+, Git and the IDE come into play.</p>
+
+<p>The problem with this approach is you have to dedicate a number of lines to construct all of the object instances your application needs, and to make sure they’re declared in the correct order for
+everything to compile. This quickly becomes a boring task as the number of object instances grows in your project. One of Spring’s goals is to aid developers to focus in writing business specific
+code, while reducing the amount of clutter. The Spring equivalent of this example only changes in its <code class="language-plaintext highlighter-rouge">Application</code> class as shown.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/sprinkles/Application.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/dependencyinjection/sprinkles/Application.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/dependencyinjection/sprinkles/Application.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/dependencyinjection/sprinkles/Application.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">dependencyinjection</span><span class="o">.</span><span class="na">sprinkles</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.boot.SpringApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.ConfigurableApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="nd">@SpringBootApplication</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+        <span class="nc">AmazonWebsite</span> <span class="n">amazonWebsite</span> <span class="o">=</span> <span class="o">(</span><span class="nc">AmazonWebsite</span><span class="o">)</span> <span class="n">context</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"amazonWebsite"</span><span class="o">);</span>
+        <span class="n">amazonWebsite</span><span class="o">.</span><span class="na">acceptOrder</span><span class="o">(</span><span class="k">new</span> <span class="nc">CustomerOrder</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">1</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">AmazonWebsite</span> <span class="nf">amazonWebsite</span><span class="o">(</span><span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">AmazonWebsite</span><span class="o">(</span><span class="n">orderProcessor</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">OrderProcessor</span> <span class="nf">orderProcessor</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span><span class="o">,</span> <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">OrderProcessor</span><span class="o">(</span><span class="n">warehouses</span><span class="o">,</span> <span class="n">customerWallet</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">Warehouse</span> <span class="nf">warehouse1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Warehouse</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">Warehouse</span> <span class="nf">warehouse2</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Warehouse</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">CustomerWallet</span> <span class="nf">customerWallet</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">CustomerWallet</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now, you might argue the Spring version takes up even more lines of code, and rightly so! But that’s only because I’m going to use this example to explain Spring’s core concept. If you understand this section
+you’ll have dominated the most important aspect of Spring, and everything will be downhill after that.</p>
+
+<blockquote>
+  <p>A Spring application is formed of a Spring context. A Spring context is just a collection of Spring beans. A Spring bean is a long living* instance of an object that also has a name Spring can
+identify it by. Spring can only “sprinkle its magic” over object instances that are within its context.</p>
+</blockquote>
+
+<p>And that’s it!</p>
+
+<p>Notice the <code class="language-plaintext highlighter-rouge">@SpringBootApplication</code> annotation on the <code class="language-plaintext highlighter-rouge">Application</code> class, this lets Java know this is a Spring* application. Notice also the first line of the <code class="language-plaintext highlighter-rouge">main()</code> method. It constructs the
+Spring context by scanning the code for any methods that are annotated with <code class="language-plaintext highlighter-rouge">@Bean</code> and inserting those instances into it. It then returns the created context back to the caller.
+To prove that a Spring context is a collection of named beans I grabbed the <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> from the context by its name and submitted an order.</p>
+
+<p>You’re probably wondering how Spring could have created all the object instances in the correct order and wired them together, all outside of the <code class="language-plaintext highlighter-rouge">main()</code> method. I would resist the urge to understand
+the inner workings of how this could be achieved unless you know about Java’s Reflection - in which case…there you go…Spring does it via Java Reflection! Instead, suffice to say the
+<code class="language-plaintext highlighter-rouge">SpringApplication.run()</code> call requests Spring to scan the code looking for special annotations (for now just <code class="language-plaintext highlighter-rouge">@Bean</code>), building a graph of object dependencies and subsequently creating them in the correct
+order. Dependencies are indicated in the method signature of <code class="language-plaintext highlighter-rouge">@Bean</code> annotated methods. <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> depends on an <code class="language-plaintext highlighter-rouge">OrderProcessor</code>, an <code class="language-plaintext highlighter-rouge">OrderProcessor</code> depends on a list of <code class="language-plaintext highlighter-rouge">Warehouse</code>s and a <code class="language-plaintext highlighter-rouge">CustomerWallet</code>, but
+<code class="language-plaintext highlighter-rouge">Warehouse</code>s don’t depend on anything for their construction, nor do <code class="language-plaintext highlighter-rouge">CustomerWallet</code>s, so Spring will create those first. Note Spring does not require you to declare these in any particular order, what’s important
+is that all dependencies are declared in their method signature. Another nice trick Spring does is aggregate all beans of type <code class="language-plaintext highlighter-rouge">Warehouse</code> before sending them for the construction of the <code class="language-plaintext highlighter-rouge">OrderProcessor</code>.</p>
+
+<p>Now that you’ve got your head round this gimmick of object creation you’re probably still regretting how surrounding object instantiations with an annotated method only increases the number
+of lines in your code, and not the opposite. Spring simplifies the creation of single instance classes (we call these singletons) by offering us to simply annotate them with <code class="language-plaintext highlighter-rouge">@Component</code> at the class level, completely avoiding
+the extra method. Have a look at <a href="https://github.com/edu05/learnspring/tree/master/src/main/java/edu/learn/spring/dependencyinjection/sprinkles_improved">the improved Spring version for this section</a>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">AmazonWebsite</code>, <code class="language-plaintext highlighter-rouge">CustomerWallet</code>, and <code class="language-plaintext highlighter-rouge">OrderProcessor</code> are annotated with <code class="language-plaintext highlighter-rouge">@Component</code>, letting Spring know it needs to create a single instance for said classes. With this strategy the dependencies are declared
+to Spring by the constructor arguments, and the name of the bean will be the camel cased name of the class. Note <code class="language-plaintext highlighter-rouge">CustomerOrder</code> is not annotated, as it simply a short lived object intended only to pass
+data around. The previous classes don’t hold any data, instead they describe business rules, making them appropriate to exist as a singleton. The <code class="language-plaintext highlighter-rouge">Warehouse</code> also
+doesn’t hold any data and it also only holds business logic, but we have 2 <code class="language-plaintext highlighter-rouge">Warehouse</code>s, not one, and for that reason it is not eligible for <code class="language-plaintext highlighter-rouge">@Component</code> annotation.</p>
+
+<p>If you’re still berating over the larger number of lines in the more concise Spring version think about how each project would fare against a growing number of single instance objects. The non-Spring
+version would keep growing needing to manually create each new object instance whereas the concise Spring version would only require an <code class="language-plaintext highlighter-rouge">@Component</code> at the top of each new class declaration. While they might
+take the same total amount of lines (after all <code class="language-plaintext highlighter-rouge">@Component</code> lines also count), I think we can agree the Spring version is simpler and allows us to focus on writing business specific code.</p>
+
+<p>The problem we have solved in this section is also referred to as dependency injection or wiring.</p>
+
+<h2 id="containerization">Containerization</h2>
+
+<p>If you run both flavours of the previous program you might have noticed the Spring variation did not just run and finish, but kept on going. This is tantamount for the majority of production grade
+apps - after all, you don’t want your website going down after taking its first order! When I was learning Java my programs were always expected to finish. Programs were viewed as a mechanism to obtain an answer to a question, and
+a program running indefinitely was usually regarded as a bad thing. When building enterprise applications it’s quite the opposite, you want to build a resilient program that can withstand the harshest
+exceptions and still keep on running!</p>
+
+<p>Programs that are long running in Spring are placed inside a container. A container is just a piece of software that wraps your application	and provides it with an execution environment that is
+responsible for supplying capabilities such as security, logging or transaction management*.</p>
+
+<p>In this section the Spring version remains unaltered but it’s worth explaining where the container comes from at this point. The maven dependency <code class="language-plaintext highlighter-rouge">spring-boot-starter-web</code> indicates Spring* ours is going
+to be a web application and so needs to run indefinitely. Spring places our program inside a container (Apache Tomcat by default) and then runs that. If you were to comment that dependency out the Spring
+program would no longer run indefinitely. Try it!</p>
+
+<p>To achieve something similar in plain Java you’d have to change the <code class="language-plaintext highlighter-rouge">Application</code> class to something like this.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/containerization/vanilla/Application.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/containerization/vanilla/Application.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/containerization/vanilla/Application.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/containerization/vanilla/Application.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">containerization</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.sun.net.httpserver.HttpServer</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="nc">HttpServer</span> <span class="n">server</span> <span class="o">=</span> <span class="nc">HttpServer</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8080</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">setExecutor</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span> <span class="c1">// creates a default executor</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="nc">Warehouse</span> <span class="n">warehouse1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+        <span class="nc">Warehouse</span> <span class="n">warehouse2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse1</span><span class="o">);</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse2</span><span class="o">);</span>
+
+        <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerWallet</span><span class="o">();</span>
+        <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderProcessor</span><span class="o">(</span><span class="n">warehouses</span><span class="o">,</span> <span class="n">customerWallet</span><span class="o">);</span>
+        <span class="nc">AmazonWebsite</span> <span class="n">amazonWebsite</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AmazonWebsite</span><span class="o">(</span><span class="n">orderProcessor</span><span class="o">);</span>
+        <span class="n">amazonWebsite</span><span class="o">.</span><span class="na">acceptOrder</span><span class="o">(</span><span class="k">new</span> <span class="nc">CustomerOrder</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">1</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>It doesn’t actually give us all the functionality a full container does, but it creates a <code class="language-plaintext highlighter-rouge">HttpServer</code> and starts it,
+allowing the vanilla program to also run indefinitely. This is the first time both versions are neck and neck on number of lines, and it’s only going to get better for Spring.</p>
+
+<h2 id="boilerplate">Boilerplate</h2>
+
+<p>So far we’ve been ignoring the fact that the <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> is not really a website (thanks for waiting patiently). It is unable to receive http requests, create java objects from the payload of the incoming
+request (we call this process deserializing and the reverse process of converting a java object into a string representation that can be sent over the wire serializing), and to respond with
+appropriate http status codes. As always lets have a look how we might achieve all of this with simple Java.</p>
+
+<p>I moved the <code class="language-plaintext highlighter-rouge">HttpServer</code> creation to <code class="language-plaintext highlighter-rouge">AmazonWebsite</code>, after all dealing with http requests is something very specific to a website, and I don’t like it when logic leaks from where it truly belongs. I had to
+add a url to my server and a specification as to what should happen to the http exchange when one is initiated (the handler). The handler consists of the deserialization of the request body into a
+<code class="language-plaintext highlighter-rouge">CustomerOrder</code>, which gets sent through to the <code class="language-plaintext highlighter-rouge">OrderProcessor</code> and then a response is sent back to the user acknowledging the order has been successfully submitted.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla/Application.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/vanilla/Application.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla/Application.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/vanilla/Application.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="nc">Warehouse</span> <span class="n">warehouse1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+        <span class="nc">Warehouse</span> <span class="n">warehouse2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Warehouse</span><span class="o">();</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Warehouse</span><span class="o">&gt;</span> <span class="n">warehouses</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse1</span><span class="o">);</span>
+        <span class="n">warehouses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">warehouse2</span><span class="o">);</span>
+
+        <span class="nc">CustomerWallet</span> <span class="n">customerWallet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerWallet</span><span class="o">();</span>
+        <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderProcessor</span><span class="o">(</span><span class="n">warehouses</span><span class="o">,</span> <span class="n">customerWallet</span><span class="o">);</span>
+        <span class="nc">AmazonWebsite</span> <span class="n">amazonWebsite</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AmazonWebsite</span><span class="o">(</span><span class="n">orderProcessor</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla/AmazonWebsite.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/vanilla/AmazonWebsite.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla/AmazonWebsite.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/vanilla/AmazonWebsite.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">vanilla</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.fasterxml.jackson.databind.ObjectMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.sun.net.httpserver.HttpServer</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AmazonWebsite</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">AmazonWebsite</span><span class="o">(</span><span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">orderProcessor</span> <span class="o">=</span> <span class="n">orderProcessor</span><span class="o">;</span>
+        <span class="nc">HttpServer</span> <span class="n">server</span> <span class="o">=</span> <span class="nc">HttpServer</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8080</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="na">createContext</span><span class="o">(</span><span class="s">"/accept-order"</span><span class="o">,</span> <span class="o">(</span><span class="n">exchange</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequestMethod</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">"POST"</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">();</span>
+            <span class="o">}</span>
+
+            <span class="nc">CustomerOrder</span> <span class="n">customerOrder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectMapper</span><span class="o">().</span><span class="na">readValue</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequestBody</span><span class="o">(),</span> <span class="nc">CustomerOrder</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">acceptOrder</span><span class="o">(</span><span class="n">customerOrder</span><span class="o">);</span>
+
+            <span class="nc">String</span> <span class="n">respText</span> <span class="o">=</span> <span class="s">"Order submitted successfully!"</span><span class="o">;</span>
+            <span class="n">exchange</span><span class="o">.</span><span class="na">sendResponseHeaders</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="n">respText</span><span class="o">.</span><span class="na">getBytes</span><span class="o">().</span><span class="na">length</span><span class="o">);</span>
+            <span class="nc">OutputStream</span> <span class="n">output</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">();</span>
+            <span class="n">output</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">respText</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+            <span class="n">output</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+            <span class="n">exchange</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}));</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">setExecutor</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span> <span class="c1">// creates a default executor</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">acceptOrder</span><span class="o">(</span><span class="nc">CustomerOrder</span> <span class="n">customerOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">orderProcessor</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">customerOrder</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When running the program you can execute this in the command line to exercise your fully fledged website.</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">curl -X POST http://localhost:8080/accept-order -H 'content-type: application/json' -d '{"itemId":3,"customerId":1}'</code></p>
+</blockquote>
+
+<p>Notice all but one of the imported classes belongs to the JDK, and that’s the <code class="language-plaintext highlighter-rouge">ObjectMapper</code>. The <code class="language-plaintext highlighter-rouge">ObjectMapper</code> has a very limited use, it’s in charge of converting the request body into our <code class="language-plaintext highlighter-rouge">CustomerOrder</code>. That means there’s no magic at all and
+the code looks crystal clear right? Yay!</p>
+
+<p>Maybe, but it’s dull and boring. Why? Because there’s much too much code for so little functionality. All that’s special about this <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> is its url (<code class="language-plaintext highlighter-rouge">accept-order</code>), what type of payload it
+needs (<code class="language-plaintext highlighter-rouge">CustomerOrder</code>), what to with it (invoke the <code class="language-plaintext highlighter-rouge">acceptOrder()</code> method) and what to return. The <code class="language-plaintext highlighter-rouge">HttpServer</code> creation, http method check, payload deserialization, and output generation is generic code - you’d have to repeat those lines
+for every url on your web application. If you’re trying to beat Amazon, who have different urls for new orders, dispathed orders, past orders, recommended items, etc. those lines will quickly build up. Bear all of this
+in mind while taking a look at the Spring version.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/AmazonWebsite.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/sprinkles/AmazonWebsite.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/AmazonWebsite.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/AmazonWebsite.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">sprinkles</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AmazonWebsite</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">AmazonWebsite</span><span class="o">(</span><span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">orderProcessor</span> <span class="o">=</span> <span class="n">orderProcessor</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/accept-order"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">acceptOrder</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">CustomerOrder</span> <span class="n">customerOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">orderProcessor</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">customerOrder</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">"Order submitted successfully!"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/Application.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/sprinkles/Application.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/Application.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/sprinkles/Application.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">sprinkles</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.boot.SpringApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.config.annotation.EnableWebMvc</span><span class="o">;</span>
+
+<span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableWebMvc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">Warehouse</span> <span class="nf">warehouse1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Warehouse</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">Warehouse</span> <span class="nf">warehouse2</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Warehouse</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice how short <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> is. The questions in your brain should match the issues in the plain Java equivalent I mentioned earlier. <code class="language-plaintext highlighter-rouge">@RestController</code> declares this is a class that’ll receive http requests,
+<code class="language-plaintext highlighter-rouge">@PostMapping("/accept-order")</code> declares the url and allowed http method, and <code class="language-plaintext highlighter-rouge">@RequestBody</code> indicates the type of payload to expect and to deserialize. You’ll have guessed the method’s body specifies what to do when a request is
+received. Finally, the <code class="language-plaintext highlighter-rouge">Application</code> class needs the <code class="language-plaintext highlighter-rouge">@EnableWebMvc</code> annotation.</p>
+
+<p>Hopefully you find this approach more concise than the pure Java one.</p>
+
+<p>To illustrate how Spring’s version can get away with being so succinct and how there’s actually very little magic going on I have extracted the boilerplate of the vanilla’s <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> class into an
+abstract <code class="language-plaintext highlighter-rouge">Wesbite</code> class that could be reused by any other future websites.</p>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/Website.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/vanilla_improved/Website.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/Website.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/Website.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">vanilla_improved</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.fasterxml.jackson.databind.ObjectMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.sun.net.httpserver.HttpServer</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Website</span><span class="o">&lt;</span><span class="no">IN</span><span class="o">,</span> <span class="no">OUT</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">Website</span><span class="o">(</span><span class="nc">String</span> <span class="n">websiteUrl</span><span class="o">,</span> <span class="nc">String</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">IN</span><span class="o">&gt;</span> <span class="n">inputType</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="nc">HttpServer</span> <span class="n">server</span> <span class="o">=</span> <span class="nc">HttpServer</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8080</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="na">createContext</span><span class="o">(</span><span class="n">websiteUrl</span><span class="o">,</span> <span class="o">(</span><span class="n">exchange</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequestMethod</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="nc">ObjectMapper</span> <span class="n">objectMapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectMapper</span><span class="o">();</span>
+
+            <span class="c1">//deserialize payload</span>
+            <span class="no">IN</span> <span class="n">input</span> <span class="o">=</span> <span class="n">objectMapper</span><span class="o">.</span><span class="na">readValue</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequestBody</span><span class="o">(),</span> <span class="n">inputType</span><span class="o">);</span>
+
+            <span class="c1">//process payload</span>
+            <span class="no">OUT</span> <span class="n">output</span> <span class="o">=</span> <span class="n">process</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+
+            <span class="c1">//serialize output</span>
+            <span class="nc">String</span> <span class="n">respText</span> <span class="o">=</span> <span class="n">objectMapper</span><span class="o">.</span><span class="na">writeValueAsString</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
+            <span class="n">exchange</span><span class="o">.</span><span class="na">sendResponseHeaders</span><span class="o">(</span><span class="mi">200</span><span class="o">,</span> <span class="n">respText</span><span class="o">.</span><span class="na">getBytes</span><span class="o">().</span><span class="na">length</span><span class="o">);</span>
+            <span class="nc">OutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">();</span>
+            <span class="n">outputStream</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">respText</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+            <span class="n">outputStream</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+            <span class="n">exchange</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}));</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">setExecutor</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span> <span class="c1">// creates a default executor</span>
+        <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kd">abstract</span> <span class="no">OUT</span> <span class="nf">process</span><span class="o">(</span><span class="no">IN</span> <span class="n">input</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<div class="github-sample-reference">
+  <div class="author-info">
+    <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/AmazonWebsite.java">This Github Sample</a> is by <a href="https://github.com/edu05">edu05</a>
+  </div>
+  <div class="meta-info">
+    src/main/java/edu/learn/spring/boilerplate/vanilla_improved/AmazonWebsite.java <a href="https://github.com/edu05/learnspring/blob/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/AmazonWebsite.java">view</a> <a href="https://raw.githubusercontent.com/edu05/learnspring/master/src/main/java/edu/learn/spring/boilerplate/vanilla_improved/AmazonWebsite.java">raw</a>
+  </div>
+</div>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">edu</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">boilerplate</span><span class="o">.</span><span class="na">vanilla_improved</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AmazonWebsite</span> <span class="kd">extends</span> <span class="nc">Website</span><span class="o">&lt;</span><span class="nc">CustomerOrder</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">AmazonWebsite</span><span class="o">(</span><span class="nc">OrderProcessor</span> <span class="n">orderProcessor</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="s">"/accept-order"</span><span class="o">,</span> <span class="s">"POST"</span><span class="o">,</span> <span class="nc">CustomerOrder</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">orderProcessor</span> <span class="o">=</span> <span class="n">orderProcessor</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="nc">String</span> <span class="nf">process</span><span class="o">(</span><span class="nc">CustomerOrder</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">acceptOrder</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">"Order submitted successfully!"</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">acceptOrder</span><span class="o">(</span><span class="nc">CustomerOrder</span> <span class="n">customerOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">orderProcessor</span><span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="n">customerOrder</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This time round, <code class="language-plaintext highlighter-rouge">AmazonWebsite</code> declares only the essence of what constitutes a class capable of receiving http requests. The url, method and the payload type go into the constructor and account for two of
+the annotations in Spring’s version. Extending the <code class="language-plaintext highlighter-rouge">Website</code> class is comparable to annotating with <code class="language-plaintext highlighter-rouge">@RestController</code>. Effectively, the code inside the <code class="language-plaintext highlighter-rouge">Website</code> class is all the boilerplate we save ourselves from writing by using Spring.</p>
+
+<p>But Spring gives us so much more though. With Spring it’d be really simple to change the serialization schema from JSON to XML, to secure the website behind a username and a password, to map exceptions
+to different http status codes, and more. Are you willing to give this a go using only plain Java?</p>
+
+<p>This is where Spring really shines. It’s able to elevate Java from a plain programming language to a tool-kit full of production grade capabilities.
+Decorating the code with annotations may not look natural at first, but it’s a small price to pay for all the free functionality we get. And, if you sit down to think about it, you can probably imagine
+how an annotation could be mapped to some plain Java code.</p>
+
+<p>Thank you for reading, let me know what you think :)</p>
+
+<hr />
+<p>*It would have been more correct to say a Spring bean is an object instance with a lifecycle. While the lifecycle of a bean normally consists of being created at the beginning of the app and
+shutdown at the end of the app, sometimes a bean might be shutdown mid app.<br />
+*More precisely a Spring Boot application. Spring Boot is a relatively recent sub-project of Spring to further simplify how we work with Spring.<br />
+*Not a direct quote but inspired by the definition in Server Component Patterns: Component Infrastructures Illustrated with EJB (Wiley Software Patterns Series)<br />
+*Spring Boot</p>
+
+  </body>
+</html>
